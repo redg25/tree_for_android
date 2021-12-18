@@ -2,8 +2,8 @@ from typing import Dict
 import json
 import requests
 
-
-new_tree = {'position': '5-5','tag':'P1','tree_type':'Pommier','comments':'No comments','pictures':'http://test.com'}
+#Exampleof tree to add
+#new_tree = {'position': '5-5','tag':'P1','tree_type':'Pommier','comments':'No comments','pictures':'http://test.com'}
 
 def login_and_get_token(username:str, password:str)->str:
     URL1='http://farmcedric.herokuapp.com/accounts/login/'
