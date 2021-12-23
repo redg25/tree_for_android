@@ -6,6 +6,8 @@ from kivy.uix.textinput import TextInput
 from postgres_util import *
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.carousel import Carousel
+from kivy.uix.image import AsyncImage
 
 tree_to_search =''
 

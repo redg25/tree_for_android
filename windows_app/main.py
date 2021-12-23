@@ -11,6 +11,8 @@ from kivy.uix.boxlayout import BoxLayout
 from typing import Dict
 from trees import Tree, YoungTree
 from postgres_util import *
+from kivy.uix.carousel import Carousel
+from kivy.uix.image import AsyncImage
 
 columns: int = 20 #size of grid columns * columns
 square_dictionary: Dict[str,Button] = {}  #Contains all the grid positions as key with their Button widget as value.
@@ -54,6 +56,13 @@ def update_create_tree(tree_btn:Button):
     popup_screen.add_widget(description_screen_layout(tree,tree_btn,popup_screen))
     popup_screen.open()
 
+def get_pictures_of_tree(tag:str) -> list[str]:
+    """Takes a tree tag and returns a list of all the urls of teh tree pictures"""
+    list_of_treepics = []
+    all_tree_pics = get_all_pics_from_a_tag(tag)
+    for tree in all_tree_pics:
+        list_of_treepics.append(tree['treepic'])
+    return list_of_treepics
 
 def create_tree_instance_from_db_values(tree_btn:Button) -> YoungTree:
     """Create a new Tree instance and assign attributes based on case: Update or Create tree"""
@@ -125,7 +134,7 @@ def description_screen_layout(tree: Tree, tree_btn:Button,popup_screen:ModalView
     values = [(tag,tree.tag),(type,tree.type)]
 
     #Gridlayout with all the single line field text input
-    trees_parameters_layout = GridLayout(cols=1, padding = 10, spacing = 10,size_hint_y = 0.5)
+    trees_parameters_layout = GridLayout(cols=1, padding = 10, spacing = 10,size_hint_y = 0.3)
     for value in values:
         para_boxlayout = BoxLayout(orientation='horizontal',  spacing = 60, size_hint_y = 0.3)
         para_boxlayout.add_widget(Label(text=value[0],size_hint_x = 0.3))
@@ -137,7 +146,7 @@ def description_screen_layout(tree: Tree, tree_btn:Button,popup_screen:ModalView
         trees_parameters_layout.add_widget(para_boxlayout)
 
     #Boxlayout with the comments fields
-    comment_boxlayout = BoxLayout(orientation='horizontal', spacing = 60, size_hint_y = 0.4)
+    comment_boxlayout = BoxLayout(orientation='horizontal', spacing = 60, size_hint_y = 0.5)
     comment_boxlayout.add_widget(Label(text=comments,size_hint_x = 0.3))
     input = TextInput(text=tree.comments, size_hint_x = 0.56, multiline=True)
     #store the widget in the text_input_widgets dictionary
@@ -148,17 +157,26 @@ def description_screen_layout(tree: Tree, tree_btn:Button,popup_screen:ModalView
     description_boxlayout.add_widget(trees_parameters_layout)
 
     #Boxlayout with the action buttons buttons
-    btn_boxlayout = BoxLayout(orientation='horizontal',  spacing = 60, padding = 20, size_hint_y = 0.2)
+    btn_boxlayout = BoxLayout(orientation='horizontal',  spacing = 60, padding = 20, size_hint_y = 0.1)
     if tree.tag != '':
         btn_boxlayout.add_widget(Button(text="SAVE",on_release=save_tree))
     else:
         btn_boxlayout.add_widget(Button(text="CREATE",on_release=create_new_tree))
     btn_boxlayout.add_widget(Button(text="BACK",on_release=popup_screen.dismiss))
     description_boxlayout.add_widget(btn_boxlayout)
-
-    lb = Label(text ='', size_hint_y = 0.2)
+    pics_layout = carousel_layout(get_pictures_of_tree(tree.tag))
+    description_boxlayout.add_widget(pics_layout,)
+    lb = Label(text ='', size_hint_y = 0.1)
     description_boxlayout.add_widget(lb)
     return description_boxlayout
+
+def carousel_layout(pics:list[str]) -> Carousel:
+    carousel = Carousel(direction='right',size_hint_y = 0.4)
+    for pic in pics:
+        src = f"http://127.0.0.1:8000{pic}"
+        image = AsyncImage(source=src, allow_stretch=True)
+        carousel.add_widget(image)
+    return carousel
 
 
 def get_position_of_button(btn):

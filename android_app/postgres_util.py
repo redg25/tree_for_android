@@ -32,7 +32,6 @@ csrftoken = client.cookies['csrftoken']
 
 def get_all_trees()->json:
     response = client.get(f'{url}treeapi/trees/', headers={"X-CSRFToken":csrftoken})
-    #response = client.get('http://127.0.0.1:8000/treeapi/trees/', headers={"X-CSRFToken":csrftoken})
     return response.json()
 
 def get_tree_from_tag(tag:str)->json:
@@ -58,4 +57,19 @@ def create_treepic(values:Dict):
     files = {'treepic': file}
     response = client.post(f'{url}treeapi/treepics/', data=data, files=files,
                            headers={"X-CSRFToken":csrftoken})
+
+def get_all_tree_pics()->json:
+    response = client.get(f'{url}treeapi/treepics/', headers={"X-CSRFToken":csrftoken})
+    return response.json()
+
+def get_all_pics_from_a_tag(tag:str)->json:
+    data ={'tag':tag}
+    response = client.get(f'{url}treeapi/treepics/', params=data, headers={"X-CSRFToken":csrftoken})
+    return response.json()
+
+
+
+#create_treepic({'treetag':"X2",'treepic':"Capture.PNG"})
+#print(get_all_tree_pics())
+#print(get_all_pics_from_a_tag('X2'))
 
