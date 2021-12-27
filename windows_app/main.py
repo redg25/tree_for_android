@@ -173,7 +173,7 @@ def description_screen_layout(tree: Tree, tree_btn:Button,popup_screen:ModalView
 def carousel_layout(pics:list[str]) -> Carousel:
     carousel = Carousel(direction='right',size_hint_y = 0.4)
     for pic in pics:
-        src = f"http://127.0.0.1:8000{pic}"
+        src = f"{url}{pic}"
         image = AsyncImage(source=src, allow_stretch=True)
         carousel.add_widget(image)
     return carousel
