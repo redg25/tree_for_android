@@ -10,18 +10,23 @@ from kivy.uix.carousel import Carousel
 from kivy.uix.image import AsyncImage
 
 tree_to_search =''
+#GLOBALS
+tag = ''
+
 
 class MainWindow(Screen):
     def __init__(self,**kwargs):
         super(MainWindow,self).__init__(**kwargs)
         self.layout = BoxLayout(orientation='vertical')
         self.layout.add_widget(Label(text="TAG de l'arbre",size_hint_y = 0.1))
-        self.input = TextInput(size_hint_y = 0.3, font_size = 30)
+        self.input = TextInput(size_hint_y = 0.3, font_size = 60)
         self.layout.add_widget(self.input)
-        self.layout.add_widget(Button(text="Get",size_hint_y = 0.6, on_release=self.screen_transition))
+        self.layout.add_widget(Button(text="Get",size_hint_y = 0.6, on_release=self.screen_transition_get))
+        self.layout.add_widget(Button(text="Add picture",size_hint_y = 0.6, on_release=self.screen_transition_take_pic))
+
         self.add_widget(self.layout)
 
-    def screen_transition(self, *args):
+    def screen_transition_get(self, *args):
 
         def get_tree_info(self,widget) -> dict:
             """Get the tree info from the db using the tag parameter.
@@ -41,6 +46,9 @@ class MainWindow(Screen):
         self.parent.screens[1].text_input_widgets['comments'].text \
             = tree_from_db['comments']
         self.manager.current = 'view_tree'
+
+    def screen_transition_take_pic(self, *args):
+        self.manager.current = 'take_pic'
 
 
 class SecondWindow(Screen):
@@ -109,10 +117,17 @@ class SecondWindow(Screen):
         update_tree(self.tree_to_search['tag'],new_values)
         self.screen_transition()
 
+class TakeTreePic(Screen):
+    def __init__(self,**kwargs):
+        super(TakeTreePic,self).__init__(**kwargs)
+        self.add_widget(Button(text="Take Picture"))
 
 class ScreenManagement(ScreenManager):
     def __init__(self, **kwargs):
         super(ScreenManagement, self).__init__(**kwargs)
+
+
+
 
 
 class MyMainApp(App):
@@ -120,6 +135,7 @@ class MyMainApp(App):
         sm = ScreenManager()
         sm.add_widget(MainWindow(name='search_tree'))
         sm.add_widget(SecondWindow(name='view_tree'))
+        sm.add_widget(TakeTreePic(name='take_pic'))
         return sm
 
 if __name__ == "__main__":
