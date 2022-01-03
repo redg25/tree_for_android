@@ -1,13 +1,19 @@
 from kivy.uix.screenmanager import ScreenManager, Screen
 from kivy.app import App
 from kivy.uix.button import Button
+from kivy.uix.togglebutton import ToggleButton
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from postgres_util import *
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.carousel import Carousel
+from kivy.uix.camera import Camera
+from kivy.utils import platform
+from kivy.graphics import PushMatrix,PopMatrix,Rotate
 from kivy.uix.image import AsyncImage
+from kivy.core.window import Window
+
 
 tree_to_search =''
 #GLOBALS
@@ -49,6 +55,7 @@ class MainWindow(Screen):
 
     def screen_transition_take_pic(self, *args):
         self.manager.current = 'take_pic'
+        self.manager.current_screen.rotate_pic()
 
 
 class SecondWindow(Screen):
@@ -120,7 +127,86 @@ class SecondWindow(Screen):
 class TakeTreePic(Screen):
     def __init__(self,**kwargs):
         super(TakeTreePic,self).__init__(**kwargs)
-        self.add_widget(Button(text="Take Picture"))
+        if platform != "android":
+            print(Window.size)
+            self.btn1 = Label(text="label",size_hint_y=0.8)
+            self.btn2 = Button(text="btn2", on_press=self.print_width,size_hint_y=0.2)
+            print(f'bt2 w is: {self.btn2.width}')
+            self.add_widget(self.btn1)
+            self.add_widget(self.btn2)
+
+            print(f'bt2 after add box w is: {self.btn2.width}')
+        else:
+            self.camera = Camera(resolution = (640,480), play = True, size_hint_y=0.8)
+            btn2 = Button(text="Take Picture",size_hint_y=0.2)
+            self.add_widget(self.camera)
+            self.add_widget(btn2)
+
+    def rotate_pic(self):
+        if platform != "android":
+            x_center = Window.size[0]*3/5
+            y_center = Window.size[1]*self.btn1.size_hint_y/2
+            with self.btn1.canvas.before:
+                PushMatrix()
+                Rotate(angle= -90,
+                       origin = (500,300))
+            with self.btn1.canvas.after:
+                PopMatrix()
+        else:
+            x_center = Window.size[0]/2
+            y_center = Window.size[1]*self.camera.size_hint_y/2
+            with self.camera.canvas.before:
+                PushMatrix()
+                Rotate(angle= -90,
+                       origin = (x_center,y_center))
+            with self.camera.canvas.after:
+                PopMatrix()
+
+    def print_width(self,dt):
+        print(print(f'bt1 after generated w is: {self.btn1.width}'))
+        print(print(f'bt1 after generated w is: {self.btn1.height}'))
+        print(print(f'bt1 after generated w is: {self.btn1.center}'))
+        print(print(f'bt1 after generated w is: {self.center}'))
+        print(print(f'bt1 after generated w is: {self.width}'))
+        print(print(f'bt1 after generated w is: {self.height}'))
+
+
+class rotated_button(Button):
+
+    def __init__(self):
+        super().__init__()
+
+        self.text = "test"
+
+        with self.canvas.before:
+            PushMatrix()
+            Rotate(angle= 50,
+                   origin = (300,50))
+            print (self.center)
+            # self.camera.rot = Rotate()
+            # self.camera.rot.angle  = -90
+            # self.camera.rot.origin = self.center
+        with self.canvas.after:
+            PopMatrix()
+
+    # def play(self, dt):
+    #     self.camera.play = True
+
+    # def take_picture(self):
+    #     self.camera.export_to_png(r"/sdcard/dcim/camera/testtree.png")
+
+# class MyCamera(Camera):
+#     def __init__(self):
+#         super().__init__()
+#         self.resolution = (640,480)
+#         self.size_hint_y=0.8
+#         self.play = True
+#         with self.canvas.before:
+#             self.rot = Rotate()
+#             self.rot.angle  = -90
+#             self.rot.origin = self.center
+#         with self.canvas.after:
+#             PopMatrix()
 
 class ScreenManagement(ScreenManager):
     def __init__(self, **kwargs):
