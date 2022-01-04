@@ -13,6 +13,7 @@ from kivy.utils import platform
 from kivy.graphics import PushMatrix,PopMatrix,Rotate
 from kivy.uix.image import AsyncImage
 from kivy.core.window import Window
+from datetime import datetime
 
 
 tree_to_search =''
@@ -33,6 +34,7 @@ class MainWindow(Screen):
         self.add_widget(self.layout)
 
     def screen_transition_get(self, *args):
+        global tag
 
         def get_tree_info(self,widget) -> dict:
             """Get the tree info from the db using the tag parameter.
@@ -40,8 +42,6 @@ class MainWindow(Screen):
             """
         tag = self.input.text
         tree_from_db = get_tree_from_tag(tag)[0]
-        # query = f"Select * from TREES where TAG = '{tag}'"
-        # tree_from_db = get_records(query)
         self.parent.screens[1].tree_to_search = tree_from_db
         self.parent.screens[1].text_input_widgets['position'].text \
             = f"Description de l'arbre en position {tree_from_db['position']}"
@@ -54,12 +54,12 @@ class MainWindow(Screen):
         self.manager.current = 'view_tree'
 
     def screen_transition_take_pic(self, *args):
+        global tag
+        tag = self.input.text
         self.manager.current = 'take_pic'
-        self.manager.current_screen.rotate_pic()
 
 
 class SecondWindow(Screen):
-
 
     def __init__(self,**kwargs):
         super(SecondWindow,self).__init__(**kwargs)
@@ -125,34 +125,26 @@ class SecondWindow(Screen):
         self.screen_transition()
 
 class TakeTreePic(Screen):
+    """Screen to take a picture and save it to the database"""
     def __init__(self,**kwargs):
         super(TakeTreePic,self).__init__(**kwargs)
+        # Camera not supported on desktop so use of a label widget instead for testing
         if platform != "android":
-            print(Window.size)
             self.btn1 = Label(text="label",size_hint_y=0.8)
-            self.btn2 = Button(text="btn2", on_press=self.print_width,size_hint_y=0.2)
-            print(f'bt2 w is: {self.btn2.width}')
-            self.add_widget(self.btn1)
-            self.add_widget(self.btn2)
-
-            print(f'bt2 after add box w is: {self.btn2.width}')
-        else:
-            self.camera = Camera(resolution = (640,480), play = True, size_hint_y=0.8)
-            btn2 = Button(text="Take Picture",size_hint_y=0.2)
-            self.add_widget(self.camera)
-            self.add_widget(btn2)
-
-    def rotate_pic(self):
-        if platform != "android":
             x_center = Window.size[0]*3/5
             y_center = Window.size[1]*self.btn1.size_hint_y/2
             with self.btn1.canvas.before:
                 PushMatrix()
                 Rotate(angle= -90,
-                       origin = (500,300))
+                       origin = (x_center,y_center))
             with self.btn1.canvas.after:
                 PopMatrix()
+            self.btn2 = Button(text="btn2", on_press=self.print_width,size_hint_y=0.2)
+            self.add_widget(self.btn1)
+            self.add_widget(self.btn2)
+        #platform is android, use of camera widget
         else:
+            self.camera = Camera(resolution = (640,480), play = True, size_hint_y=0.8)
             x_center = Window.size[0]/2
             y_center = Window.size[1]*self.camera.size_hint_y/2
             with self.camera.canvas.before:
@@ -161,59 +153,29 @@ class TakeTreePic(Screen):
                        origin = (x_center,y_center))
             with self.camera.canvas.after:
                 PopMatrix()
+            btn2 = Button(text="Take Picture",size_hint_y=0.2,on_press=self.save_pic_to_database)
+            self.add_widget(self.camera)
+            self.add_widget(btn2)
+
+    def save_pic_to_database(self,dt):
+        nb_of_pics_for_tag = len(get_all_pics_from_a_tag(tag))
+        file_name = f"/sdcard/dcim/camera/{tag}_{datetime.now().strftime('%d%m%Y')}_" \
+                    f"{str(nb_of_pics_for_tag+1)}.png"
+        self.camera.export_to_png(file_name)
+        tree_pic_to_add = {'treetag':tag,'treepic':file_name}
+        create_treepic(tree_pic_to_add)
+
 
     def print_width(self,dt):
-        print(print(f'bt1 after generated w is: {self.btn1.width}'))
-        print(print(f'bt1 after generated w is: {self.btn1.height}'))
-        print(print(f'bt1 after generated w is: {self.btn1.center}'))
-        print(print(f'bt1 after generated w is: {self.center}'))
-        print(print(f'bt1 after generated w is: {self.width}'))
-        print(print(f'bt1 after generated w is: {self.height}'))
+        nb_of_pics_for_tag = len(get_all_pics_from_a_tag(tag))
+        print("Button was pushed on desktop app")
+        print(f"/sdcard/dcim/camera/{tag}_{datetime.now().strftime('%d%m%Y')}"
+              f"_{str(nb_of_pics_for_tag+1)}.png")
 
-
-class rotated_button(Button):
-
-    def __init__(self):
-        super().__init__()
-
-        self.text = "test"
-
-        with self.canvas.before:
-            PushMatrix()
-            Rotate(angle= 50,
-                   origin = (300,50))
-            print (self.center)
-            # self.camera.rot = Rotate()
-            # self.camera.rot.angle  = -90
-            # self.camera.rot.origin = self.center
-        with self.canvas.after:
-            PopMatrix()
-
-    # def play(self, dt):
-    #     self.camera.play = True
-
-    # def take_picture(self):
-    #     self.camera.export_to_png(r"/sdcard/dcim/camera/testtree.png")
-
-# class MyCamera(Camera):
-#     def __init__(self):
-#         super().__init__()
-#         self.resolution = (640,480)
-#         self.size_hint_y=0.8
-#         self.play = True
-#         with self.canvas.before:
-#             self.rot = Rotate()
-#             self.rot.angle  = -90
-#             self.rot.origin = self.center
-#         with self.canvas.after:
-#             PopMatrix()
 
 class ScreenManagement(ScreenManager):
     def __init__(self, **kwargs):
         super(ScreenManagement, self).__init__(**kwargs)
-
-
-
 
 
 class MyMainApp(App):
