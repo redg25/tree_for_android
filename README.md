@@ -5,7 +5,7 @@ Kivy prototype applications to manage physical storage. Originally designed for 
 
 A desktop app where the user can:
 - assign "tree" to a physical representation of the space (i.e. field).
-!simple representation, each tag is a tree](/images/tree_view.png)
+![simple representation, each tag is a tree](/images/tree_view.png)
 - view "tree" parameter
 - manage "tree" parameter
 
