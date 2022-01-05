@@ -93,12 +93,6 @@ class SecondWindow(Screen):
                 para_boxlayout.add_widget(input)
                 para_boxlayout.add_widget(Label(text='',size_hint_x = 0.04))
                 trees_parameters_layout.add_widget(para_boxlayout)
-
-        #store the widget in the text_input_widgets dictionary
-        # self.text_input_widgets[SecondWindow.comments]=input
-        # comment_boxlayout.add_widget(input)
-        # comment_boxlayout.add_widget(Label(text='',size_hint_x = 0.04))
-        # trees_parameters_layout.add_widget(comment_boxlayout)
         description_boxlayout.add_widget(trees_parameters_layout)
 
         #Boxlayout with the action buttons buttons
@@ -165,12 +159,6 @@ class TakeTreePic(Screen):
 
     def screen_transition(self, *args):
         self.manager.current = 'search_tree'
-
-    def print_width(self,dt):
-        nb_of_pics_for_tag = len(get_all_pics_from_a_tag(tag))
-        print("Button was pushed on desktop app")
-        print(f"/sdcard/dcim/camera/{tag}_{datetime.now().strftime('%d%m%Y')}"
-              f"_{str(nb_of_pics_for_tag+1)}.png")
 
 
 class ScreenManagement(ScreenManager):
