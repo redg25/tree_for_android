@@ -4,10 +4,10 @@ This code has no intent to be reused fully but some ideas could be taken from it
 Kivy prototype applications to manage physical storage. Originally designed for a tree farm.
 
 A desktop app where the user can:
-- assign "tree" to a physical representation of the space (i.e. field).
+- assign "tree" to a physical representation of the space (i.e. field).<br>
 ![simple representation, each tag is a tree](/images/tree_view.png)
-- view "tree" parameter
-- manage "tree" parameter
+- view and manage "tree" parameters
+
 
 An Android app where the user can:
 - view "tree" parameter
