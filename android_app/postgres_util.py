@@ -21,7 +21,7 @@ with open("config.json",'r') as f:
     username = data[0]['auth']['username']
     password = data[0]['auth']['password']
 
-env = 'prod'
+env = 'dev'
 if env == 'dev':
     url = 'http://127.0.0.1:8000/'
 elif env == 'prod':

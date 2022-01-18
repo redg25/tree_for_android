@@ -23,7 +23,7 @@ with open("config.json",'r') as f:
 
 env = 'prod'
 if env == 'dev':
-    url = 'http://127.0.0.1:8000/'
+    url = 'http://127.0.0.1:8000'
 elif env == 'prod':
     url = 'http://farmcedric.herokuapp.com'
 
@@ -69,7 +69,7 @@ def get_all_pics_from_a_tag(tag:str)->json:
 
 
 
-# create_treepic({'treetag':"X1",'treepic':"recto.jpeg"})
-# print(get_all_tree_pics())
-# #print(get_all_pics_from_a_tag('X1'))
+create_treepic({'treetag':"X2",'treepic':"recto.jpeg"})
+print(get_all_tree_pics())
+#print(get_all_pics_from_a_tag('X1'))
 

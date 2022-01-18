@@ -125,7 +125,7 @@ class TakeTreePic(Screen):
         super(TakeTreePic,self).__init__(**kwargs)
         # Camera not supported on desktop so use of a label widget instead for testing
         if platform == "android":
-            self.camera = Camera(resolution = (640,480), play = True, size_hint_y=0.8)
+            self.camera_widget = Camera(resolution = (640,480), play = True, size_hint_y=0.8)
         else:
             self.camera_widget = Label(text="label",size_hint_y=0.8)
         x_center = Window.size[0]*3/5
@@ -151,7 +151,7 @@ class TakeTreePic(Screen):
             nb_of_pics_for_tag = len(get_all_pics_from_a_tag(tag))
             file_name = f"/sdcard/dcim/camera/{tag}_{datetime.now().strftime('%d%m%Y')}_" \
                         f"{str(nb_of_pics_for_tag+1)}.png"
-            self.camera.export_to_png(file_name)
+            self.camera_widget.export_to_png(file_name)
             tree_pic_to_add = {'treetag':tag,'treepic':file_name}
             create_treepic(tree_pic_to_add)
         else:

@@ -119,6 +119,13 @@ def description_screen_layout(tree: Tree, tree_btn:Button,popup_screen:ModalView
             'tree_type':text_input_widgets[type].text,
             'comments':text_input_widgets[comments].text,
             'pictures':'http://test.com'}
+        if values['comments']=='':
+            values = {
+                'position':tree.position,
+                'tag':text_input_widgets[tag].text,
+                'tree_type':text_input_widgets[type].text,
+                'comments':'No comment',
+                'pictures':'http://test.com'}
         create_tree(values)
         tree_btn.text = text_input_widgets[tag].text
         tree_btn.background_color = [0, 1, 0, 1]
@@ -173,7 +180,7 @@ def description_screen_layout(tree: Tree, tree_btn:Button,popup_screen:ModalView
 def carousel_layout(pics:list[str]) -> Carousel:
     carousel = Carousel(direction='right',size_hint_y = 0.4)
     for pic in pics:
-        src = f"{url}{pic}"
+        src = f"{pic}"
         image = AsyncImage(source=src, allow_stretch=True)
         carousel.add_widget(image)
     return carousel
